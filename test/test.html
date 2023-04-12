@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <script src="three.js"></script>
   <script src="http://www.yanhuangxueyuan.com/threejs/examples/js/controls/OrbitControls.js"></script>
@@ -35,12 +36,19 @@
     let controls = new THREE.OrbitControls(camera, renderer.domElement);
     //创建一个键盘状态对象，监听键盘事件
     let keyboard = new THREEx.KeyboardState();
-    //创建一个光源
-    let light = new THREE.DirectionalLight(0xffffff, 1);
+
+    //创建一个半球光源，用来模拟太阳光和天空光 //添加半球光源
+    let hemiLight = new THREE.HemisphereLight(0xffffff, 0x000000, 0.5); //设置半球光源的颜色和强度
+    //把半球光源添加到场景中
+    scene.add(hemiLight);
+
+    //创建一个方向光源，用来模拟平行光
+    let light = new THREE.DirectionalLight(0xffffff, 0.8); //修改光源的强度为0.8
     //设置光源的位置
-    light.position.set(5, 3, 5);
+    light.position.set(5, 3, 5); //修改光源的位置为(5, 3, 5)
     //把光源添加到场景中
     scene.add(light);
+
     //创建一个地球几何体
     let earthGeometry = new THREE.SphereGeometry(2, 32, 32);
     //创建一个地球材质
@@ -51,6 +59,13 @@
     earthMaterial.normalMap = new THREE.TextureLoader().load("assets/earthnormal.jpg");
     //设置地球材质的高光纹理
     earthMaterial.specularMap = new THREE.TextureLoader().load("assets/earthspecular.jpg");
+
+    earthMaterial.shininess = 10; //添加地球材质的高光系数为10
+    earthMaterial.blendMode = THREE.MultiplyBlending; //添加地球材质的颜色混合模式为相乘
+
+    earthMaterial.emissive = new THREE.Color(0x222222); //添加地球材质的自发光颜色为深灰色
+    earthMaterial.emissiveMap = new THREE.TextureLoader().load("assets/earthnight.jpg"); //添加地球材质的自发光纹理为夜晚灯光图
+
     //创建一个地球网格对象
     let earthMesh = new THREE.Mesh(earthGeometry, earthMaterial);
     //把地球网格对象添加到场景中
@@ -175,6 +190,22 @@
     }
     //调用渲染函数
     render();
+
+    //创建一个立方体纹理加载器，用来加载背景纹理 //添加立方体纹理加载器
+    let cubeTextureLoader = new THREE.CubeTextureLoader();
+    //设置立方体纹理加载器的路径，用来指定背景纹理的位置
+    cubeTextureLoader.setPath("assets/");
+    //加载背景纹理，用来显示星空效果 //添加背景纹理
+    let cubeTexture = cubeTextureLoader.load([
+      "starfield.jpg",
+      "starfield.jpg",
+      "starfield.jpg",
+      "starfield.jpg",
+      "starfield.jpg",
+      "starfield.jpg",
+    ]);
+    //把背景纹理设置为场景的背景 //添加场景背景
+    scene.background = cubeTexture;
   </script>
 </body>
 
